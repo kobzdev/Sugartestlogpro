@@ -329,7 +329,7 @@ textarea.finput{resize:none;height:72px;font-size:13px}
   <div class="scr" id="scr-cfg">
     <div class="card">
       <div class="ctitle">Appearance</div>
-      <div class="srow2"><div class="stitle">Dark Mode</div><div class="tgl on" id="darkTgl"></div></div>
+      <div class="srow2"><div class="stitle">Dark Mode</div><div class="tgl on" id="darkTgl" onclick="toggleTheme()"></div></div>
     </div>
     <div class="card">
       <div class="ctitle">📤 Export CSV</div>
@@ -652,11 +652,7 @@ function applyTheme() {
   document.getElementById('darkTgl').classList.toggle('on',prefs.dark)
   document.getElementById('themeBtn').textContent=prefs.dark?'🌙':'☀️'
 }
-window.toggleTheme = () => {
-  prefs.dark = !prefs.dark;
-  savePrefs();
-  applyTheme();
-};
+window.toggleTheme=()=>{ prefs.dark=!prefs.dark; savePrefs(); applyTheme() }
 
 // ── Tabs ──────────────────────────────────────────────────────
 window.go=function(tab) {
@@ -668,10 +664,6 @@ window.go=function(tab) {
   if(tab==='cfg')   renderCfg()
   if(tab==='admin') renderAdmin()
 }
-
-document.getElementById('darkTgl').addEventListener('click', () => {
-  toggleTheme();
-});
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>go(t.dataset.tab)))
 
 // Admin button in header
@@ -920,18 +912,10 @@ function renderInsights(){
 
 // ── Settings ──────────────────────────────────────────────────
 function renderCfg(){
-  document.getElementById('darkTgl').classList.toggle('on', prefs.dark)
-
-  document.getElementById('rLow').value = prefs.low
-  document.getElementById('rHigh').value = prefs.high
-  document.getElementById('rWarn').value = prefs.warn
-
-  document.getElementById('entCount').textContent = entries.length
-
+  document.getElementById('darkTgl').classList.toggle('on',prefs.dark)
+  document.getElementById('rLow').value=prefs.low; document.getElementById('rHigh').value=prefs.high; document.getElementById('rWarn').value=prefs.warn
+  document.getElementById('entCount').textContent=entries.length
   updatePubExportPreview()
-
-  // optional (helps refresh UI properly)
-  setTimeout(updatePubExportPreview, 100)
 }
 
 // Public export helpers
@@ -958,40 +942,22 @@ window.setPubRange=function(key){
   document.getElementById('pubExpTo').value=r.to
   updatePubExportPreview()
 }
-window.doPubExport = function () {
-  const filtered = getPubFiltered();
-
-  if (!filtered.length) {
-    toast('No entries in this range', 'warn');
-    return;
-  }
-
-  const from = document.getElementById('pubExpFrom').value;
-  const to = document.getElementById('pubExpTo').value;
-
-  const hdr = 'Date,Time,Level (mg/dL),Status,Test Type,Meal Tag,Notes';
-  const rows = filtered.map(e => {
-    const st = status(e.level);
-    const d = new Date(e.datetime);
-
-    return [
-      d.toLocaleDateString(),
-      d.toLocaleTimeString(),
-      e.level,
-      st.lbl,
-      `"${e.type}"`,
-      `"${e.meal}"`,
-      `"${(e.notes || '').replace(/"/g, '""')}"`
-    ].join(',');
-  });
-
-  const csv = '\uFEFF' + [hdr, ...rows].join('\n';
-
-  const filename = `sugar_log_${from || 'all'}_to_${to || 'today'}.csv`;
-  downloadCSV(csv, filename);
-
-  toast(`${filtered.length} entries exported`);
-};
+window.doPubExport=function(){
+  const filtered=getPubFiltered()
+  if(!filtered.length){toast('No entries in this range','warn');return}
+  const from=document.getElementById('pubExpFrom').value
+  const to=document.getElementById('pubExpTo').value
+  const hdr='Date,Time,Level (mg/dL),Status,Test Type,Meal Tag,Notes'
+  const rows=filtered.map(e=>{
+    const st=status(e.level),d=new Date(e.datetime)
+    return[d.toLocaleDateString(),d.toLocaleTimeString(),e.level,st.lbl,`"${e.type}"`,`"${e.meal}"`,`"${(e.notes||'').replace(/"/g,'""')}"`].join(',')
+  })
+  const csv=[hdr,...rows].join('\n')
+  const a=document.createElement('a')
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}))
+  a.download=`sugar_log_${from||'all'}_to_${to||'today'}.csv`
+  a.click(); toast(`${filtered.length} entries exported`)
+}
 document.getElementById('pubExpFrom').addEventListener('change',updatePubExportPreview)
 document.getElementById('pubExpTo').addEventListener('change',updatePubExportPreview)
 
@@ -1080,40 +1046,22 @@ document.getElementById('delFrom').addEventListener('change',updateDelPreview)
 document.getElementById('delTo').addEventListener('change',updateDelPreview)
 
 // ── Export ────────────────────────────────────────────────────
-window.doExport = function () {
-  const filtered = getFilteredEntries('expFrom', 'expTo');
-
-  if (!filtered.length) {
-    toast('No entries in this range', 'warn');
-    return;
-  }
-
-  const from = document.getElementById('expFrom').value;
-  const to = document.getElementById('expTo').value;
-
-  const hdr = 'Date,Time,Level (mg/dL),Status,Test Type,Meal Tag,Notes';
-  const rows = filtered.map(e => {
-    const st = status(e.level);
-    const d = new Date(e.datetime);
-
-    return [
-      d.toLocaleDateString(),
-      d.toLocaleTimeString(),
-      e.level,
-      st.lbl,
-      `"${e.type}"`,
-      `"${e.meal}"`,
-      `"${(e.notes || '').replace(/"/g, '""')}"`
-    ].join(',');
-  });
-
-  const csv = '\uFEFF' + [hdr, ...rows].join('\n');
-
-  const filename = `sugar_log_${from || 'all'}_to_${to || 'today'}.csv`;
-  downloadCSV(csv, filename);
-
-  toast(`${filtered.length} entries exported`);
-};
+window.doExport=function(){
+  const filtered=getFilteredEntries('expFrom','expTo')
+  if(!filtered.length){toast('No entries in this range','warn');return}
+  const from=document.getElementById('expFrom').value, to=document.getElementById('expTo').value
+  const hdr='Date,Time,Level (mg/dL),Status,Test Type,Meal Tag,Notes'
+  const rows=filtered.map(e=>{
+    const st=status(e.level),d=new Date(e.datetime)
+    return[d.toLocaleDateString(),d.toLocaleTimeString(),e.level,st.lbl,`"${e.type}"`,`"${e.meal}"`,`"${(e.notes||'').replace(/"/g,'""')}"`].join(',')
+  })
+  const csv=[hdr,...rows].join('\n')
+  const a=document.createElement('a')
+  const fname=`sugar_log_${from||'all'}_to_${to||'today'}.csv`
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}))
+  a.download=fname; a.click()
+  toast(`${filtered.length} entries exported`)
+}
 
 // ── Bulk Delete (admin) ───────────────────────────────────────
 window.confirmDelete=function(){
@@ -1195,27 +1143,6 @@ async function init(){
   }
   renderDash(); renderLog(); renderCfg()
 }
-
-function downloadCSV(csv, filename) {
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-
-  if (navigator.msSaveBlob) {
-    navigator.msSaveBlob(blob, filename);
-  } else {
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-
-    link.href = url;
-    link.setAttribute('download', filename);
-    document.body.appendChild(link);
-
-    link.click();
-
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }
-}
-
 init()
 </script>
 </body>
