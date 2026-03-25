@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Sugar Test Log Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── Variables ── */
+:root {
+  --bg:#0f1117;--bg2:#1a1d27;--bg3:#22263a;
+  --border:rgba(255,255,255,0.08);
+  --text:#f0f2ff;--text2:#8b90a8;--text3:#555a72;
+  --accent:#6c8fff;--accent2:#a78bfa;
+  --green:#22d3a0;--yellow:#f59e0b;--red:#f43f5e;
+  --gbg:rgba(34,211,160,.13);--ybg:rgba(245,158,11,.13);--rbg:rgba(244,63,94,.13);
+  --card:#1a1d27;--r:14px;--rs:10px;--tr:.18s ease;
+}
+.light{
+  --bg:#f4f6ff;--bg2:#fff;--bg3:#eaecf8;
+  --border:rgba(0,0,0,.08);
+  --text:#0f1117;--text2:#555a72;--text3:#9398b0;
+  --accent:#4c6ef5;--accent2:#7c3aed;
+  --green:#059669;--yellow:#d97706;--red:#e11d48;
+  --gbg:rgba(5,150,105,.1);--ybg:rgba(217,119,6,.1);--rbg:rgba(225,29,72,.1);
+  --card:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);overflow:hidden}
+body{font-family:'DM Sans',sans-serif;color:var(--text);transition:background var(--tr),color var(--tr)}
+#app{display:flex;flex-direction:column;height:100dvh;max-width:500px;margin:0 auto;overflow:hidden;position:relative}
+
+/* ── Header ── */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:13px 16px 11px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;z-index:10}
+.htitle{font-size:18px;font-weight:700;letter-spacing:-.4px}
+.htitle span{color:var(--accent)}
+.hbtns{display:flex;gap:6px}
+.ibtn{width:36px;height:36px;border-radius:9px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--text2);transition:all var(--tr);position:relative}
+.ibtn:active{transform:scale(.91)}
+.admin-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--green);display:none}
+.admin-dot.show{display:block}
+
+/* ── Nav ── */
+.nav{display:flex;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0}
+.tab{flex:1;padding:9px 2px;text-align:center;font-size:10px;font-weight:600;color:var(--text3);cursor:pointer;transition:all var(--tr);position:relative;letter-spacing:.3px;text-transform:uppercase}
+.tab.on{color:var(--accent)}
+.tab.on::after{content:'';position:absolute;bottom:0;left:16%;right:16%;height:2px;background:var(--accent);border-radius:2px 2px 0 0}
+.ticon{font-size:16px;display:block;margin-bottom:2px}
+
+/* ── Screens ── */
+.scr{flex:1;overflow-y:auto;overflow-x:hidden;padding:14px;display:none}
+.scr.on{display:block}
+.scr::-webkit-scrollbar{width:2px}
+.scr::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:2px}
+
+/* ── Cards ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:15px;margin-bottom:11px;transition:background var(--tr)}
+.ctitle{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:11px}
+
+/* ── Latest card ── */
+.latest{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;text-align:center;padding:24px 20px}
+.llbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;opacity:.8;margin-bottom:5px}
+.lnum{font-size:62px;font-weight:700;font-family:'DM Mono',monospace;line-height:1}
+.lunit{font-size:13px;opacity:.8;margin-top:3px}
+.lbadge{display:inline-block;margin-top:9px;padding:3px 13px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(255,255,255,.2)}
+.lmeta{font-size:11px;opacity:.65;margin-top:5px}
+
+/* ── Stats ── */
+.sgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:10px}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:12px 8px;text-align:center}
+.sv{font-size:20px;font-weight:700;font-family:'DM Mono',monospace}
+.sl{font-size:9px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.hlrow{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px}
+.hlc{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:12px;display:flex;align-items:center;gap:9px}
+.hlval{font-size:20px;font-weight:700;font-family:'DM Mono',monospace}
+.hllbl{font-size:9px;color:var(--text3);font-weight:600;text-transform:uppercase}
+
+/* ── Chart ── */
+.cwrap{width:100%;height:160px}
+
+/* ── Log items ── */
+.litem{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:12px;margin-bottom:7px;display:flex;align-items:center;gap:10px;transition:all .25s}
+.litem.out{opacity:0;transform:translateX(30px)}
+.lvl{width:50px;height:50px;border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
+.lvnum{font-size:15px;font-weight:700;font-family:'DM Mono',monospace;line-height:1}
+.lvunit{font-size:8px;font-weight:600;opacity:.7}
+.linfo{flex:1;min-width:0}
+.ltype{font-size:12px;font-weight:600}
+.ldate{font-size:10px;color:var(--text3);margin-top:2px}
+.lnote{font-size:10px;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lacts{display:flex;gap:5px}
+.lab{width:28px;height:28px;border-radius:7px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;transition:all var(--tr)}
+.lab:active{transform:scale(.86)}
+.lab.del-btn:hover{background:var(--rbg);border-color:var(--red)}
+
+/* ── Admin lock overlay on log ── */
+.admin-lock{display:flex;align-items:center;gap:6px;padding:9px 13px;background:var(--rbg);border:1px solid var(--red);border-radius:var(--rs);margin-bottom:10px;font-size:12px;color:var(--red);font-weight:500}
+
+/* ── Search / Filter ── */
+.srow{display:flex;gap:7px;margin-bottom:10px}
+.sinput{flex:1;background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:9px 12px;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color var(--tr)}
+.sinput:focus{border-color:var(--accent)}
+.fscroll{display:flex;gap:7px;overflow-x:auto;margin-bottom:10px;padding-bottom:1px}
+.fscroll::-webkit-scrollbar{display:none}
+.fbtn{background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:7px 12px;font-size:12px;color:var(--text2);cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;transition:all var(--tr)}
+.fbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ── Form ── */
+.flab{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:7px;display:block}
+.finput{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:12px 14px;font-size:15px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color var(--tr);margin-bottom:14px}
+.finput:focus{border-color:var(--accent)}
+.bigf{font-size:32px;font-weight:700;font-family:'DM Mono',monospace;text-align:center}
+textarea.finput{resize:none;height:72px;font-size:13px}
+.pills{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+.pill{padding:7px 13px;border-radius:20px;background:var(--bg3);border:1px solid var(--border);font-size:12px;font-weight:500;cursor:pointer;transition:all var(--tr);color:var(--text2)}
+.pill.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.pill:active{transform:scale(.93)}
+.dtrow{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}
+
+/* ── Buttons ── */
+.sbtn{width:100%;padding:15px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all var(--tr)}
+.sbtn:active{transform:scale(.97);opacity:.9}
+.sbtn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.ebtn{width:100%;padding:12px;background:var(--gbg);color:var(--green);border:1px solid var(--green);border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all var(--tr);margin-bottom:7px}
+.rbtn{background:var(--rbg);color:var(--red);border-color:var(--red)}
+.cbtn{width:100%;padding:12px;background:none;border:1px solid var(--border);border-radius:var(--r);color:var(--text2);font-size:14px;cursor:pointer;margin-top:7px;font-family:'DM Sans',sans-serif}
+.ybtn{background:var(--ybg);color:var(--yellow);border-color:var(--yellow)}
+
+/* ── Settings rows ── */
+.srow2{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border)}
+.srow2:last-child{border-bottom:none}
+.stitle{font-size:13px;font-weight:500}
+.ssub{font-size:11px;color:var(--text3);margin-top:1px}
+.tgl{width:44px;height:24px;background:var(--bg3);border-radius:12px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.tgl.on{background:var(--accent)}
+.tgl::after{content:'';position:absolute;width:18px;height:18px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s;box-shadow:0 2px 4px rgba(0,0,0,.25)}
+.tgl.on::after{transform:translateX(20px)}
+
+/* ── Insights ── */
+.iitem{display:flex;align-items:flex-start;gap:9px;padding:11px 0;border-bottom:1px solid var(--border)}
+.iitem:last-child{border-bottom:none;padding-bottom:0}
+.iicon{font-size:19px;flex-shrink:0}
+.itxt{font-size:12px;color:var(--text2);line-height:1.55}
+.itxt strong{color:var(--text)}
+
+/* ── Admin Panel ── */
+.admin-login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px;padding:20px}
+.admin-icon{font-size:48px;margin-bottom:4px}
+.admin-title{font-size:20px;font-weight:700}
+.admin-sub{font-size:13px;color:var(--text2);text-align:center}
+.pw-input{width:100%;max-width:280px;background:var(--card);border:1px solid var(--border);border-radius:var(--rs);padding:14px 18px;font-size:18px;color:var(--text);font-family:'DM Mono',monospace;outline:none;text-align:center;letter-spacing:4px;transition:border-color var(--tr)}
+.pw-input:focus{border-color:var(--accent)}
+.pw-error{color:var(--red);font-size:12px;font-weight:600;min-height:18px}
+.login-btn{width:100%;max-width:280px;padding:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* ── Admin content ── */
+.admin-badge{display:inline-flex;align-items:center;gap:6px;background:var(--rbg);color:var(--red);border:1px solid var(--red);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;margin-bottom:14px}
+.section-divider{height:1px;background:var(--border);margin:14px 0}
+.export-range{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px}
+.range-label{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+
+/* ── Deletion history ── */
+.del-hist-item{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);padding:12px;margin-bottom:8px}
+.dhi-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px}
+.dhi-date{font-size:11px;color:var(--text3)}
+.dhi-count{background:var(--rbg);color:var(--red);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;white-space:nowrap}
+.dhi-reason{font-size:12px;color:var(--text);font-weight:500;margin-bottom:4px}
+.dhi-range{font-size:11px;color:var(--text2)}
+.dhi-entries{margin-top:8px;border-top:1px solid var(--border);padding-top:8px;display:none}
+.dhi-entries.open{display:block}
+.dhi-toggle{font-size:11px;color:var(--accent);cursor:pointer;font-weight:600;margin-top:4px}
+.dhi-entry-row{font-size:11px;color:var(--text2);padding:3px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
+.dhi-entry-row:last-child{border-bottom:none}
+
+/* ── Delete confirm form ── */
+.del-reason-form{background:var(--rbg);border:1px solid var(--red);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.del-reason-title{font-size:13px;font-weight:700;color:var(--red);margin-bottom:10px}
+
+/* ── Modal ── */
+.moverlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;max-width:500px;left:50%;transform:translateX(-50%)}
+.moverlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg2);border-radius:22px 22px 0 0;padding:22px;width:100%;max-height:88vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.moverlay.open .modal{transform:translateY(0)}
+.mhandle{width:38px;height:3px;background:var(--border);border-radius:2px;margin:0 auto 18px}
+.mtitle{font-size:17px;font-weight:700;margin-bottom:18px}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:10px 18px;font-size:13px;font-weight:600;z-index:300;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{color:var(--green);border-color:var(--green)}
+.toast.err{color:var(--red);border-color:var(--red)}
+.toast.warn{color:var(--yellow);border-color:var(--yellow)}
+
+/* ── Misc ── */
+.shdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.seeall{font-size:11px;color:var(--accent);font-weight:600;cursor:pointer}
+.tbadge{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.tu{background:var(--rbg);color:var(--red)}.td{background:var(--gbg);color:var(--green)}.ts{background:var(--ybg);color:var(--yellow)}
+.rbadge{padding:2px 7px;border-radius:5px;font-size:10px;font-weight:600}
+.bg-g{background:var(--gbg);color:var(--green)}.bg-y{background:var(--ybg);color:var(--yellow)}.bg-r{background:var(--rbg);color:var(--red)}
+.c-g{color:var(--green)}.c-y{color:var(--yellow)}.c-r{color:var(--red)}
+.empty{text-align:center;padding:36px 16px;color:var(--text3)}
+.ei{font-size:40px;margin-bottom:10px}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin-right:5px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.separator{height:70px}
+</style>
+</head>
+<body>
+
+<div id="toast" class="toast"></div>
+
+<div id="app">
+  <!-- Header -->
+  <div class="hdr">
+    <div class="htitle">Sugar<span>Pro</span></div>
+    <div class="hbtns">
+      <div class="ibtn" id="themeBtn">🌙</div>
+      <div class="ibtn" id="adminBtn" title="Admin Panel">
+        🔐
+        <div class="admin-dot" id="adminDot"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <div class="nav">
+    <div class="tab on" data-tab="dash"><span class="ticon">📊</span>Dashboard</div>
+    <div class="tab" data-tab="log"><span class="ticon">📋</span>Log</div>
+    <div class="tab" data-tab="add"><span class="ticon">➕</span>Add</div>
+    <div class="tab" data-tab="ins"><span class="ticon">💡</span>Insights</div>
+    <div class="tab" data-tab="cfg"><span class="ticon">⚙️</span>Settings</div>
+  </div>
+
+  <!-- ── Dashboard ── -->
+  <div class="scr on" id="scr-dash">
+    <div class="card latest">
+      <div class="llbl">Latest Reading</div>
+      <div class="lnum" id="latNum">--</div>
+      <div class="lunit">mg/dL</div>
+      <div class="lbadge" id="latSt">No data yet</div>
+      <div class="lmeta" id="latMeta"></div>
+    </div>
+    <div class="sgrid">
+      <div class="sc"><div class="sv" id="stDay">--</div><div class="sl">Today</div></div>
+      <div class="sc"><div class="sv" id="stWeek">--</div><div class="sl">7-Day</div></div>
+      <div class="sc"><div class="sv" id="stMonth">--</div><div class="sl">30-Day</div></div>
+    </div>
+    <div class="hlrow">
+      <div class="hlc"><span style="font-size:20px">📈</span><div><div class="hlval c-r" id="stHigh">--</div><div class="hllbl">Highest</div></div></div>
+      <div class="hlc"><span style="font-size:20px">📉</span><div><div class="hlval c-g" id="stLow">--</div><div class="hllbl">Lowest</div></div></div>
+    </div>
+    <div class="card">
+      <div class="shdr"><div class="ctitle" style="margin-bottom:0">14-Day Trend</div><div id="trendBadge"></div></div>
+      <div class="cwrap"><canvas id="chart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="shdr"><div class="ctitle" style="margin-bottom:0">Recent Entries</div><div class="seeall" onclick="go('log')">See all</div></div>
+      <div id="recList"></div>
+    </div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">
+      <div class="rbadge bg-g">Normal 70–140</div>
+      <div class="rbadge bg-y">Warning 141–199</div>
+      <div class="rbadge bg-r">High ≥200 · Low &lt;70</div>
+    </div>
+    <div class="separator"></div>
+  </div>
+
+  <!-- ── Log ── -->
+  <div class="scr" id="scr-log">
+    <div class="srow">
+      <input class="sinput" id="searchQ" placeholder="🔍  Search entries..." type="text">
+    </div>
+    <div class="fscroll" id="filterRow">
+      <div class="fbtn on" data-f="all">All</div>
+      <div class="fbtn" data-f="Fasting">Fasting</div>
+      <div class="fbtn" data-f="Before Meal">Before Meal</div>
+      <div class="fbtn" data-f="After Meal">After Meal</div>
+      <div class="fbtn" data-f="Random">Random</div>
+    </div>
+    <div id="logLock" class="admin-lock" style="display:none">🔒 Log in as admin to edit or delete entries</div>
+    <div id="logList"></div>
+    <div class="separator"></div>
+  </div>
+
+  <!-- ── Add ── -->
+  <div class="scr" id="scr-add">
+    <div style="font-size:19px;font-weight:700;margin-bottom:18px">New Entry</div>
+    <label class="flab">Blood Sugar Level (mg/dL)</label>
+    <input class="finput bigf" id="inLvl" type="number" placeholder="120" min="20" max="600" inputmode="decimal">
+    <label class="flab">Test Type</label>
+    <div class="pills" id="typePills">
+      <div class="pill" data-v="Fasting">Fasting</div>
+      <div class="pill" data-v="Before Meal">Before Meal</div>
+      <div class="pill" data-v="After Meal">After Meal</div>
+      <div class="pill" data-v="Random">Random</div>
+    </div>
+    <label class="flab">Meal Tag</label>
+    <div class="pills" id="mealPills">
+      <div class="pill" data-v="Breakfast">🌅 Breakfast</div>
+      <div class="pill" data-v="Lunch">☀️ Lunch</div>
+      <div class="pill" data-v="Dinner">🌙 Dinner</div>
+      <div class="pill" data-v="Snack">🍎 Snack</div>
+      <div class="pill" data-v="None">None</div>
+    </div>
+    <label class="flab">Date & Time</label>
+    <div class="dtrow">
+      <input class="finput" id="inDate" type="date" style="margin-bottom:0">
+      <input class="finput" id="inTime" type="time" style="margin-bottom:0">
+    </div>
+    <label class="flab" style="margin-top:14px">Notes (optional)</label>
+    <textarea class="finput" id="inNotes" placeholder="e.g. felt tired, skipped breakfast..."></textarea>
+    <button class="sbtn" id="saveBtn">💾 Save Entry</button>
+    <div class="separator"></div>
+  </div>
+
+  <!-- ── Insights ── -->
+  <div class="scr" id="scr-ins">
+    <div class="card"><div class="ctitle">Smart Insights</div><div id="insightsList"></div></div>
+    <div class="card"><div class="ctitle">By Test Type (Avg mg/dL)</div><div id="byType"></div></div>
+    <div class="separator"></div>
+  </div>
+
+  <!-- ── Settings ── -->
+  <div class="scr" id="scr-cfg">
+    <div class="card">
+      <div class="ctitle">Appearance</div>
+      <div class="srow2"><div class="stitle">Dark Mode</div><div class="tgl on" id="darkTgl" onclick="toggleTheme()"></div></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">📤 Export CSV</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:12px">Select a date range, or leave blank to export all entries.</div>
+      <div class="export-range">
+        <div>
+          <div class="range-label">From date</div>
+          <input class="finput" id="pubExpFrom" type="date" style="margin-bottom:0">
+        </div>
+        <div>
+          <div class="range-label">To date</div>
+          <input class="finput" id="pubExpTo" type="date" style="margin-bottom:0">
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
+        <div class="fbtn" onclick="setPubRange('thisweek')">This week</div>
+        <div class="fbtn" onclick="setPubRange('lastweek')">Last week</div>
+        <div class="fbtn" onclick="setPubRange('thismonth')">This month</div>
+        <div class="fbtn" onclick="setPubRange('last30')">Last 30 days</div>
+        <div class="fbtn" onclick="setPubRange('all')">All time</div>
+      </div>
+      <div id="pubExportPreview" style="font-size:12px;color:var(--text3);margin-bottom:10px;min-height:18px"></div>
+      <button class="ebtn" style="margin-bottom:0" onclick="doPubExport()">📤 Export to CSV</button>
+    </div>
+    <div class="card">
+      <div class="ctitle">Normal Range (mg/dL)</div>
+      <div class="srow2"><div class="stitle">Low threshold</div><input type="number" id="rLow" value="70" class="finput" style="width:80px;text-align:center;padding:8px;margin-bottom:0"></div>
+      <div class="srow2"><div class="stitle">High (normal)</div><input type="number" id="rHigh" value="140" class="finput" style="width:80px;text-align:center;padding:8px;margin-bottom:0"></div>
+      <div class="srow2"><div class="stitle">Warning threshold</div><input type="number" id="rWarn" value="200" class="finput" style="width:80px;text-align:center;padding:8px;margin-bottom:0"></div>
+      <button class="ebtn" style="margin-top:10px;margin-bottom:0" onclick="saveRanges()">Save Ranges</button>
+    </div>
+    <div class="card">
+      <div class="ctitle">Database</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8">
+        <span id="dbStatus">⏳ Connecting...</span><br>
+        Total entries: <strong id="entCount" style="color:var(--accent)">0</strong>
+      </div>
+    </div>
+    <div class="separator"></div>
+  </div>
+
+  <!-- ── Admin Panel ── -->
+  <div class="scr" id="scr-admin">
+    <!-- Login wall -->
+    <div id="adminLoginWall">
+      <div class="admin-login">
+        <div class="admin-icon">🔐</div>
+        <div class="admin-title">Admin Access</div>
+        <div class="admin-sub">Enter the admin password to manage data.</div>
+        <input class="pw-input" id="pwInput" type="password" placeholder="••••••••" autocomplete="off">
+        <div class="pw-error" id="pwError"></div>
+        <button class="login-btn" onclick="tryAdminLogin()">Unlock Admin</button>
+      </div>
+    </div>
+
+    <!-- Admin content (hidden until logged in) -->
+    <div id="adminContent" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div class="admin-badge">🔓 Admin Mode</div>
+        <div style="font-size:12px;color:var(--text2);cursor:pointer" onclick="adminLogout()">Logout</div>
+      </div>
+
+      <!-- Export with date range -->
+      <div class="card">
+        <div class="ctitle">📤 Export CSV</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:12px">Select a date range to export, or leave blank to export all entries.</div>
+        <div class="export-range">
+          <div>
+            <div class="range-label">From date</div>
+            <input class="finput" id="expFrom" type="date" style="margin-bottom:0">
+          </div>
+          <div>
+            <div class="range-label">To date</div>
+            <input class="finput" id="expTo" type="date" style="margin-bottom:0">
+          </div>
+        </div>
+        <div style="margin-bottom:10px">
+          <div class="range-label" style="margin-bottom:7px">Quick ranges</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <div class="fbtn" onclick="setQuickRange('thisweek')">This week</div>
+            <div class="fbtn" onclick="setQuickRange('lastweek')">Last week</div>
+            <div class="fbtn" onclick="setQuickRange('thismonth')">This month</div>
+            <div class="fbtn" onclick="setQuickRange('last30')">Last 30 days</div>
+            <div class="fbtn" onclick="setQuickRange('all')">All time</div>
+          </div>
+        </div>
+        <div id="exportPreview" style="font-size:12px;color:var(--text3);margin-bottom:10px;min-height:18px"></div>
+        <button class="ebtn" style="margin-bottom:0" onclick="doExport()">📤 Export to CSV</button>
+      </div>
+
+      <!-- Delete entries -->
+      <div class="card">
+        <div class="ctitle">🗑️ Delete Entries</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:12px">Select a date range and provide a reason. All deletions are permanently logged.</div>
+
+        <div class="export-range">
+          <div>
+            <div class="range-label">From date</div>
+            <input class="finput" id="delFrom" type="date" style="margin-bottom:0">
+          </div>
+          <div>
+            <div class="range-label">To date</div>
+            <input class="finput" id="delTo" type="date" style="margin-bottom:0">
+          </div>
+        </div>
+
+        <div style="margin-bottom:12px">
+          <div class="range-label" style="margin-bottom:7px">Quick ranges</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <div class="fbtn" onclick="setDelRange('thisweek')">This week</div>
+            <div class="fbtn" onclick="setDelRange('lastweek')">Last week</div>
+            <div class="fbtn" onclick="setDelRange('thismonth')">This month</div>
+            <div class="fbtn" onclick="setDelRange('last30')">Last 30 days</div>
+            <div class="fbtn" onclick="setDelRange('all')">All time</div>
+          </div>
+        </div>
+
+        <div id="delPreview" style="font-size:12px;color:var(--text3);margin-bottom:12px;min-height:18px"></div>
+
+        <label class="flab">Reason for deletion <span style="color:var(--red)">*</span></label>
+        <div class="pills" id="reasonPills" style="margin-bottom:10px">
+          <div class="pill" data-v="Duplicate entries">Duplicate entries</div>
+          <div class="pill" data-v="Test / demo data">Test / demo data</div>
+          <div class="pill" data-v="Data entry error">Data entry error</div>
+          <div class="pill" data-v="Patient request">Patient request</div>
+          <div class="pill" data-v="Other">Other</div>
+        </div>
+        <label class="flab">Additional notes (optional)</label>
+        <textarea class="finput" id="delNotes" placeholder="Any extra context about this deletion..." style="height:60px"></textarea>
+
+        <button class="ebtn rbtn" onclick="confirmDelete()" id="delBtn">🗑️ Preview & Delete</button>
+      </div>
+
+      <!-- Deletion history -->
+      <div class="card">
+        <div class="ctitle">📜 Deletion History</div>
+        <div id="delHistory"><div class="empty"><div class="ei">📜</div><p style="font-size:12px">No deletions recorded yet.</p></div></div>
+      </div>
+
+      <div class="separator"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="moverlay" id="editModal">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">Edit Entry</div>
+    <label class="flab">Blood Sugar (mg/dL)</label>
+    <input class="finput bigf" id="eLvl" type="number" inputmode="decimal">
+    <label class="flab">Test Type</label>
+    <div class="pills" id="eTypePills">
+      <div class="pill" data-v="Fasting">Fasting</div>
+      <div class="pill" data-v="Before Meal">Before Meal</div>
+      <div class="pill" data-v="After Meal">After Meal</div>
+      <div class="pill" data-v="Random">Random</div>
+    </div>
+    <label class="flab">Meal Tag</label>
+    <div class="pills" id="eMealPills">
+      <div class="pill" data-v="Breakfast">🌅 Breakfast</div>
+      <div class="pill" data-v="Lunch">☀️ Lunch</div>
+      <div class="pill" data-v="Dinner">🌙 Dinner</div>
+      <div class="pill" data-v="Snack">🍎 Snack</div>
+      <div class="pill" data-v="None">None</div>
+    </div>
+    <label class="flab">Date & Time</label>
+    <div class="dtrow">
+      <input class="finput" id="eDate" type="date" style="margin-bottom:0">
+      <input class="finput" id="eTime" type="time" style="margin-bottom:0">
+    </div>
+    <label class="flab" style="margin-top:14px">Notes</label>
+    <textarea class="finput" id="eNotes"></textarea>
+    <button class="sbtn" id="saveEditBtn">💾 Save Changes</button>
+    <button class="cbtn" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- Delete confirm modal -->
+<div class="moverlay" id="delConfirmModal">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle" style="color:var(--red)">⚠️ Confirm Deletion</div>
+    <div id="delConfirmBody" style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:16px"></div>
+    <div style="background:var(--rbg);border:1px solid var(--red);border-radius:var(--rs);padding:12px;margin-bottom:16px;font-size:12px;color:var(--red)">
+      ⚠️ This action is <strong>permanent</strong> and cannot be undone. The deletion will be logged with your reason.
+    </div>
+    <button class="sbtn" style="background:linear-gradient(135deg,var(--red),#ff6b6b)" id="confirmDelBtn">Yes, Delete Permanently</button>
+    <button class="cbtn" onclick="closeDelModal()">Cancel</button>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+// ── Config ────────────────────────────────────────────────────
+const SUPA_URL  = import.meta.env?.VITE_SUPABASE_URL  || window.__SUPA_URL__
+const SUPA_KEY  = import.meta.env?.VITE_SUPABASE_ANON_KEY || window.__SUPA_KEY__
+const ADMIN_PWD = import.meta.env?.VITE_ADMIN_PASSWORD || window.__ADMIN_PWD__ || 'admin123'
+
+let sb = null
+function initSupa() {
+  if (!SUPA_URL || SUPA_URL.includes('your-project')) {
+    document.getElementById('dbStatus').innerHTML = '⚠️ <span style="color:var(--yellow)">Not configured — add env vars</span>'
+    return false
+  }
+  sb = createClient(SUPA_URL, SUPA_KEY)
+  return true
+}
+
+// ── State ─────────────────────────────────────────────────────
+let entries    = []
+let delHistory = []
+let prefs      = { dark:true, low:70, high:140, warn:200 }
+let isAdmin    = false
+let curFilter  = 'all'
+let searchQ    = ''
+let editId     = null
+let pendingDel = null   // { ids, reason, range, notes }
+
+// ── Prefs ─────────────────────────────────────────────────────
+function loadPrefs() { try { const p=JSON.parse(localStorage.getItem('slp_prefs2')); if(p) prefs={...prefs,...p} } catch{} }
+function savePrefs() { localStorage.setItem('slp_prefs2',JSON.stringify(prefs)) }
+function loadAdminSession() { isAdmin = sessionStorage.getItem('slp_admin')==='1' }
+function saveAdminSession() { sessionStorage.setItem('slp_admin','1') }
+function clearAdminSession(){ sessionStorage.removeItem('slp_admin') }
+
+// ── DB ────────────────────────────────────────────────────────
+async function fetchEntries() {
+  if (!sb) return
+  const { data, error } = await sb.from('sugar_logs').select('*').order('datetime',{ascending:false})
+  if (error) { toast('Load error: '+error.message,'err'); return }
+  entries = data || []
+  document.getElementById('dbStatus').innerHTML = '✅ <span style="color:var(--green)">Connected</span>'
+  document.getElementById('entCount').textContent = entries.length
+}
+
+async function fetchDelHistory() {
+  if (!sb) return
+  const { data } = await sb.from('deletion_log').select('*').order('deleted_at',{ascending:false})
+  delHistory = data || []
+}
+
+async function insertEntry(row) {
+  if (!sb) return null
+  const { data, error } = await sb.from('sugar_logs').insert([row]).select().single()
+  if (error) { toast('Save failed: '+error.message,'err'); return null }
+  return data
+}
+
+async function updateEntryDB(id, changes) {
+  if (!sb) return false
+  const { error } = await sb.from('sugar_logs').update(changes).eq('id',id)
+  if (error) { toast('Update failed: '+error.message,'err'); return false }
+  return true
+}
+
+async function deleteEntriesDB(ids) {
+  if (!sb||!ids.length) return false
+  const { error } = await sb.from('sugar_logs').delete().in('id',ids)
+  if (error) { toast('Delete failed: '+error.message,'err'); return false }
+  return true
+}
+
+async function logDeletion(reason, notes, ids, dateRange) {
+  if (!sb) return
+  const deletedEntries = ids.map(id => entries.find(e=>e.id===id)).filter(Boolean)
+  await sb.from('deletion_log').insert([{
+    reason: notes ? reason + (notes ? ' — ' + notes : '') : reason,
+    entries_count: ids.length,
+    entries_json: deletedEntries,
+    date_range: dateRange || 'All entries',
+    deleted_by: 'admin'
+  }])
+}
+
+// ── Helpers ───────────────────────────────────────────────────
+function fmtDate(iso) { return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) }
+function fmtTime(iso) { return new Date(iso).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}) }
+function fmtDT(iso)   { return fmtDate(iso)+' · '+fmtTime(iso) }
+function avg(arr)     { return arr.length ? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length) : null }
+function dago(n)      { const d=new Date(); d.setDate(d.getDate()-n); d.setHours(0,0,0,0); return d }
+function isoDate(d)   { return d.toISOString().split('T')[0] }
+
+function weekStart(d) { const c=new Date(d); c.setDate(c.getDate()-c.getDay()); c.setHours(0,0,0,0); return c }
+function monthStart(d){ return new Date(d.getFullYear(),d.getMonth(),1) }
+function monthEnd(d)  { return new Date(d.getFullYear(),d.getMonth()+1,0) }
+
+function getRange(key) {
+  const now = new Date()
+  switch(key) {
+    case 'thisweek':  return { from: isoDate(weekStart(now)), to: isoDate(now) }
+    case 'lastweek':  { const s=weekStart(now); s.setDate(s.getDate()-7); const e=new Date(s); e.setDate(e.getDate()+6); return {from:isoDate(s),to:isoDate(e)} }
+    case 'thismonth': return { from: isoDate(monthStart(now)), to: isoDate(monthEnd(now)) }
+    case 'last30':    return { from: isoDate(dago(30)), to: isoDate(now) }
+    case 'all':       return { from: '', to: '' }
+    default:          return { from:'', to:'' }
+  }
+}
+
+function status(v) {
+  if (v<prefs.low)  return {lbl:'Low ⚠',  cls:'r',bg:'bg-r',c:'c-r'}
+  if (v<=prefs.high) return {lbl:'Normal ✓',cls:'g',bg:'bg-g',c:'c-g'}
+  if (v<prefs.warn)  return {lbl:'Warning', cls:'y',bg:'bg-y',c:'c-y'}
+  return {lbl:'High ⚠',cls:'r',bg:'bg-r',c:'c-r'}
+}
+
+// ── Toast ─────────────────────────────────────────────────────
+let _tt
+function toast(msg, type='ok') {
+  const el=document.getElementById('toast')
+  el.textContent=(type==='ok'?'✓ ':type==='warn'?'⚠ ':'✕ ')+msg
+  el.className=`toast show ${type}`
+  clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),2600)
+}
+
+// ── Theme ─────────────────────────────────────────────────────
+function applyTheme() {
+  document.body.classList.toggle('light',!prefs.dark)
+  document.getElementById('darkTgl').classList.toggle('on',prefs.dark)
+  document.getElementById('themeBtn').textContent=prefs.dark?'🌙':'☀️'
+}
+window.toggleTheme=()=>{ prefs.dark=!prefs.dark; savePrefs(); applyTheme() }
+
+// ── Tabs ──────────────────────────────────────────────────────
+window.go=function(tab) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.tab===tab))
+  document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id==='scr-'+tab))
+  if(tab==='dash')  renderDash()
+  if(tab==='log')   renderLog()
+  if(tab==='ins')   renderInsights()
+  if(tab==='cfg')   renderCfg()
+  if(tab==='admin') renderAdmin()
+}
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>go(t.dataset.tab)))
+
+// Admin button in header
+document.getElementById('adminBtn').addEventListener('click',()=>{
+  // Add admin tab to nav if not there, or just navigate
+  go('admin')
+  // highlight nav: deselect others
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'))
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'))
+  document.getElementById('scr-admin').classList.add('on')
+  renderAdmin()
+})
+
+// ── Pills ─────────────────────────────────────────────────────
+function initPills(id) {
+  document.querySelectorAll(`#${id} .pill`).forEach(p=>{
+    p.addEventListener('click',()=>{
+      document.querySelectorAll(`#${id} .pill`).forEach(x=>x.classList.remove('on'))
+      p.classList.add('on')
+    })
+  })
+}
+function getPill(id){ const s=document.querySelector(`#${id} .pill.on`); return s?s.dataset.v:null }
+function setPill(id,val){ document.querySelectorAll(`#${id} .pill`).forEach(p=>p.classList.toggle('on',p.dataset.v===val)) }
+;['typePills','mealPills','eTypePills','eMealPills','reasonPills'].forEach(initPills)
+
+function setNow() {
+  const n=new Date()
+  document.getElementById('inDate').value=n.toISOString().split('T')[0]
+  document.getElementById('inTime').value=n.toTimeString().substr(0,5)
+}
+setNow()
+
+// ── Add Entry ─────────────────────────────────────────────────
+document.getElementById('saveBtn').addEventListener('click', async ()=>{
+  const lvl=parseFloat(document.getElementById('inLvl').value)
+  const type=getPill('typePills')
+  const meal=getPill('mealPills')||'None'
+  const date=document.getElementById('inDate').value
+  const time=document.getElementById('inTime').value
+  const notes=document.getElementById('inNotes').value.trim()
+  if(!lvl||lvl<20||lvl>600){ toast('Enter a valid level (20–600)','err'); return }
+  if(!type){ toast('Select a test type','err'); return }
+  if(!date||!time){ toast('Enter date and time','err'); return }
+  const btn=document.getElementById('saveBtn')
+  btn.disabled=true; btn.textContent='⏳ Saving...'
+  const saved=await insertEntry({level:lvl,type,meal,datetime:new Date(date+'T'+time).toISOString(),notes})
+  if(saved){
+    entries.unshift(saved)
+    document.getElementById('inLvl').value=''
+    document.querySelectorAll('#typePills .pill,#mealPills .pill').forEach(p=>p.classList.remove('on'))
+    document.getElementById('inNotes').value=''
+    setNow()
+    toast('Entry saved!')
+    go('dash')
+  }
+  btn.disabled=false; btn.textContent='💾 Save Entry'
+  document.getElementById('entCount').textContent=entries.length
+})
+
+// ── Dashboard ─────────────────────────────────────────────────
+function renderDash() {
+  const e=entries[0]
+  if(e){
+    const st=status(e.level)
+    document.getElementById('latNum').textContent=e.level
+    document.getElementById('latSt').textContent=st.lbl
+    document.getElementById('latMeta').textContent=e.type+(e.meal!=='None'?' · '+e.meal:'')+' · '+fmtDT(e.datetime)
+  }
+  const now=new Date()
+  const td=entries.filter(e=>new Date(e.datetime).toDateString()===now.toDateString()).map(e=>e.level)
+  const wk=entries.filter(e=>new Date(e.datetime)>=dago(7)).map(e=>e.level)
+  const mo=entries.filter(e=>new Date(e.datetime)>=dago(30)).map(e=>e.level)
+  const all=entries.map(e=>e.level)
+  document.getElementById('stDay').textContent=avg(td)||'--'
+  document.getElementById('stWeek').textContent=avg(wk)||'--'
+  document.getElementById('stMonth').textContent=avg(mo)||'--'
+  document.getElementById('stHigh').textContent=all.length?Math.max(...all):'--'
+  document.getElementById('stLow').textContent=all.length?Math.min(...all):'--'
+  renderTrend(); renderChart(); renderRecent()
+}
+
+function renderTrend() {
+  const tb=document.getElementById('trendBadge')
+  const w1=entries.filter(e=>new Date(e.datetime)>=dago(7)).map(e=>e.level)
+  const w2=entries.filter(e=>{const d=new Date(e.datetime);return d>=dago(14)&&d<dago(7)}).map(e=>e.level)
+  if(w1.length<2||!w2.length){tb.innerHTML='';return}
+  const diff=avg(w1)-avg(w2)
+  tb.innerHTML=diff>5?`<span class="tbadge tu">↑ +${diff} vs last week</span>`:
+    diff<-5?`<span class="tbadge td">↓ ${diff} vs last week</span>`:
+    `<span class="tbadge ts">→ Stable</span>`
+}
+
+function renderRecent() {
+  const c=document.getElementById('recList')
+  if(!entries.length){c.innerHTML='<div style="text-align:center;padding:14px;color:var(--text3);font-size:12px">No entries yet</div>';return}
+  c.innerHTML=entries.slice(0,3).map(e=>logHTML(e,false)).join('')
+}
+
+function renderChart() {
+  const canvas=document.getElementById('chart'); if(!canvas) return
+  const ctx=canvas.getContext('2d')
+  const dpr=window.devicePixelRatio||1
+  const W=canvas.parentElement.offsetWidth||300,H=160
+  canvas.width=W*dpr; canvas.height=H*dpr
+  canvas.style.width=W+'px'; canvas.style.height=H+'px'
+  ctx.scale(dpr,dpr); ctx.clearRect(0,0,W,H)
+  const days=[]
+  for(let i=13;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i); d.setHours(0,0,0,0)
+    const d2=new Date(d); d2.setDate(d2.getDate()+1)
+    const es=entries.filter(e=>{const ed=new Date(e.datetime);return ed>=d&&ed<d2})
+    days.push({lbl:d.toLocaleDateString('en-US',{month:'short',day:'numeric'}),avg:es.length?avg(es.map(e=>e.level)):null})
+  }
+  const pts=days.map((d,i)=>d.avg!==null?{x:i,y:d.avg}:null).filter(Boolean)
+  if(pts.length<2){ctx.fillStyle='#555a72';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText('Not enough data',W/2,H/2);return}
+  const pad={t:12,r:12,b:24,l:36},cW=W-pad.l-pad.r,cH=H-pad.t-pad.b
+  const vals=pts.map(p=>p.y),minV=Math.max(0,Math.min(...vals)-15),maxV=Math.max(...vals)+15
+  const xS=i=>pad.l+(i/13)*cW,yS=v=>pad.t+cH-((v-minV)/(maxV-minV))*cH
+  const tc=prefs.dark?'#555a72':'#9398b0'
+  ctx.strokeStyle=prefs.dark?'rgba(255,255,255,.05)':'rgba(0,0,0,.05)'; ctx.lineWidth=1
+  for(let i=0;i<=3;i++){const y=pad.t+(cH/3)*i;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();ctx.fillStyle=tc;ctx.font='9px monospace';ctx.textAlign='right';ctx.fillText(Math.round(maxV-((maxV-minV)/3)*i),pad.l-3,y+3)}
+  const grad=ctx.createLinearGradient(0,pad.t,0,H-pad.b)
+  grad.addColorStop(0,'rgba(108,143,255,.25)');grad.addColorStop(1,'rgba(108,143,255,0)')
+  ctx.beginPath();ctx.moveTo(xS(pts[0].x),yS(pts[0].y))
+  for(let i=1;i<pts.length;i++){const cp=(xS(pts[i-1].x)+xS(pts[i].x))/2;ctx.bezierCurveTo(cp,yS(pts[i-1].y),cp,yS(pts[i].y),xS(pts[i].x),yS(pts[i].y))}
+  ctx.lineTo(xS(pts[pts.length-1].x),H-pad.b);ctx.lineTo(xS(pts[0].x),H-pad.b);ctx.closePath();ctx.fillStyle=grad;ctx.fill()
+  ctx.beginPath();ctx.moveTo(xS(pts[0].x),yS(pts[0].y))
+  for(let i=1;i<pts.length;i++){const cp=(xS(pts[i-1].x)+xS(pts[i].x))/2;ctx.bezierCurveTo(cp,yS(pts[i-1].y),cp,yS(pts[i].y),xS(pts[i].x),yS(pts[i].y))}
+  ctx.strokeStyle='#6c8fff';ctx.lineWidth=2.5;ctx.stroke()
+  pts.forEach(p=>{const col=status(p.y).cls==='g'?'#22d3a0':status(p.y).cls==='y'?'#f59e0b':'#f43f5e';ctx.beginPath();ctx.arc(xS(p.x),yS(p.y),4,0,Math.PI*2);ctx.fillStyle=col;ctx.fill();ctx.strokeStyle=prefs.dark?'#1a1d27':'#fff';ctx.lineWidth=2;ctx.stroke()})
+  ctx.fillStyle=tc;ctx.font='8px sans-serif';ctx.textAlign='center'
+  ;[0,4,8,13].forEach(i=>{if(days[i])ctx.fillText(days[i].lbl,xS(i),H-pad.b+13)})
+}
+
+// ── Log ───────────────────────────────────────────────────────
+function renderLog() {
+  document.getElementById('logLock').style.display=isAdmin?'none':'flex'
+  let filtered=[...entries]
+  if(curFilter!=='all') filtered=filtered.filter(e=>e.type===curFilter)
+  if(searchQ){
+    const q=searchQ.toLowerCase()
+    filtered=filtered.filter(e=>e.type.toLowerCase().includes(q)||e.meal.toLowerCase().includes(q)||(e.notes&&e.notes.toLowerCase().includes(q))||String(e.level).includes(q)||fmtDate(e.datetime).toLowerCase().includes(q))
+  }
+  const c=document.getElementById('logList')
+  if(!filtered.length){c.innerHTML='<div class="empty"><div class="ei">📋</div><p style="font-size:12px">No entries found</p></div>';return}
+  c.innerHTML=filtered.map(e=>logHTML(e,isAdmin)).join('')
+  if(isAdmin) bindLogActions(c)
+}
+
+function logHTML(e, showActions) {
+  const st=status(e.level)
+  return `<div class="litem" data-id="${e.id}">
+    <div class="lvl ${st.bg}">
+      <div class="lvnum ${st.c}">${e.level}</div>
+      <div class="lvunit ${st.c}">mg/dL</div>
+    </div>
+    <div class="linfo">
+      <div class="ltype">${e.type}${e.meal!=='None'?' · '+e.meal:''}</div>
+      <div class="ldate">${fmtDT(e.datetime)}</div>
+      ${e.notes?`<div class="lnote">📝 ${e.notes}</div>`:''}
+    </div>
+    ${showActions?`<div class="lacts">
+      <div class="lab edit-btn" data-id="${e.id}" title="Edit">✏️</div>
+      <div class="lab del-btn" data-id="${e.id}" title="Delete">🗑️</div>
+    </div>`:''}
+  </div>`
+}
+
+function bindLogActions(c) {
+  c.querySelectorAll('.edit-btn').forEach(b=>b.addEventListener('click',ev=>{ev.stopPropagation();openEdit(b.dataset.id)}))
+  c.querySelectorAll('.del-btn').forEach(b=>b.addEventListener('click',ev=>{ev.stopPropagation();deleteSingle(b.dataset.id)}))
+}
+
+document.querySelectorAll('#filterRow .fbtn').forEach(b=>{
+  b.addEventListener('click',()=>{document.querySelectorAll('#filterRow .fbtn').forEach(x=>x.classList.remove('on'));b.classList.add('on');curFilter=b.dataset.f;renderLog()})
+})
+document.getElementById('searchQ').addEventListener('input',e=>{searchQ=e.target.value;renderLog()})
+
+// ── Delete single (admin only, from log) ──────────────────────
+async function deleteSingle(id) {
+  const e=entries.find(x=>x.id===id); if(!e) return
+  if(!confirm(`Delete reading of ${e.level} mg/dL from ${fmtDT(e.datetime)}?`)) return
+  const reason=prompt('Reason for deletion (required):','')
+  if(!reason||!reason.trim()){ toast('Deletion cancelled — reason required','warn'); return }
+  const el=document.querySelector(`.litem[data-id="${id}"]`)
+  if(el) el.classList.add('out')
+  await logDeletion(reason.trim(),'',[id],fmtDT(e.datetime))
+  setTimeout(async()=>{
+    const ok=await deleteEntriesDB([id])
+    if(ok){ entries=entries.filter(x=>x.id!==id); renderLog(); renderDash(); document.getElementById('entCount').textContent=entries.length; toast('Entry deleted'); await fetchDelHistory(); if(isAdmin) renderDelHistory() }
+    else if(el) el.classList.remove('out')
+  },250)
+}
+
+// ── Edit ──────────────────────────────────────────────────────
+function openEdit(id){
+  const e=entries.find(x=>x.id===id); if(!e) return
+  editId=id
+  document.getElementById('eLvl').value=e.level
+  const dt=new Date(e.datetime)
+  document.getElementById('eDate').value=dt.toISOString().split('T')[0]
+  document.getElementById('eTime').value=dt.toTimeString().substr(0,5)
+  document.getElementById('eNotes').value=e.notes||''
+  setPill('eTypePills',e.type); setPill('eMealPills',e.meal)
+  document.getElementById('editModal').classList.add('open')
+}
+window.closeModal=()=>{document.getElementById('editModal').classList.remove('open');editId=null}
+document.getElementById('editModal').addEventListener('click',e=>{if(e.target===document.getElementById('editModal'))closeModal()})
+document.getElementById('saveEditBtn').addEventListener('click',async()=>{
+  const lvl=parseFloat(document.getElementById('eLvl').value)
+  const type=getPill('eTypePills'),meal=getPill('eMealPills')||'None'
+  const date=document.getElementById('eDate').value,time=document.getElementById('eTime').value
+  const notes=document.getElementById('eNotes').value.trim()
+  if(!lvl||!type||!date||!time){toast('Fill in all fields','err');return}
+  const btn=document.getElementById('saveEditBtn'); btn.disabled=true; btn.textContent='⏳ Saving...'
+  const changes={level:lvl,type,meal,datetime:new Date(date+'T'+time).toISOString(),notes}
+  const ok=await updateEntryDB(editId,changes)
+  if(ok){entries=entries.map(e=>e.id===editId?{...e,...changes}:e);toast('Entry updated');closeModal();renderLog();renderDash()}
+  btn.disabled=false; btn.textContent='💾 Save Changes'
+})
+
+// ── Insights ──────────────────────────────────────────────────
+function renderInsights(){
+  const c=document.getElementById('insightsList'),bt=document.getElementById('byType')
+  if(entries.length<3){c.innerHTML='<div class="empty" style="padding:16px 0"><div class="ei" style="font-size:32px">🔍</div><p style="font-size:12px">Add at least 3 entries.</p></div>';bt.innerHTML='';return}
+  const types=['Fasting','Before Meal','After Meal','Random'],ts={}
+  types.forEach(t=>{const v=entries.filter(e=>e.type===t).map(e=>e.level);if(v.length)ts[t]={avg:avg(v),count:v.length}})
+  const ins=[]
+  if(ts['After Meal']&&ts['After Meal'].avg>prefs.high) ins.push({i:'🍽️',t:`<strong>After-meal sugar often high</strong> — avg ${ts['After Meal'].avg} mg/dL. Try smaller portions or a short walk after meals.`})
+  if(ts['Fasting']&&ts['Fasting'].avg>prefs.high) ins.push({i:'🌅',t:`<strong>Fasting sugar elevated</strong> — avg ${ts['Fasting'].avg} mg/dL. Consult your doctor.`})
+  const w1=entries.filter(e=>new Date(e.datetime)>=dago(7)).map(e=>e.level)
+  const w2=entries.filter(e=>{const d=new Date(e.datetime);return d>=dago(14)&&d<dago(7)}).map(e=>e.level)
+  if(w1.length&&w2.length){const diff=avg(w1)-avg(w2);if(diff>10)ins.push({i:'📈',t:`<strong>Rising trend</strong> — up by ${diff} mg/dL vs last week.`});else if(diff<-10)ins.push({i:'📉',t:`<strong>Improving!</strong> — down by ${Math.abs(diff)} mg/dL. 🎉`})}
+  const hc=entries.filter(e=>e.level>=prefs.warn).length; if(hc>2)ins.push({i:'⚠️',t:`<strong>${hc} high readings</strong> (≥${prefs.warn} mg/dL). Review carb intake.`})
+  const lc=entries.filter(e=>e.level<prefs.low).length; if(lc>0)ins.push({i:'🔻',t:`<strong>${lc} low reading${lc>1?'s':''}</strong> detected. Carry fast-acting carbs.`})
+  const mt=Object.entries(ts).sort((a,b)=>b[1].count-a[1].count)[0]; if(mt)ins.push({i:'📊',t:`<strong>${mt[0]}</strong> most tested (${mt[1].count} entries), avg <strong>${mt[1].avg} mg/dL</strong>.`})
+  if(!ins.length)ins.push({i:'✅',t:'<strong>All good!</strong> Keep monitoring regularly.'})
+  c.innerHTML=ins.map(x=>`<div class="iitem"><div class="iicon">${x.i}</div><div class="itxt">${x.t}</div></div>`).join('')
+  bt.innerHTML=types.map(t=>{
+    if(!ts[t])return`<div class="srow2"><div class="stitle">${t}</div><span style="color:var(--text3);font-size:12px">No data</span></div>`
+    const st=status(ts[t].avg)
+    return`<div class="srow2"><div><div class="stitle">${t}</div><div class="ssub">${ts[t].count} entries</div></div><span class="${st.c}" style="font-size:17px;font-weight:700;font-family:'DM Mono',monospace">${ts[t].avg}</span></div>`
+  }).join('')
+}
+
+// ── Settings ──────────────────────────────────────────────────
+function renderCfg(){
+  document.getElementById('darkTgl').classList.toggle('on',prefs.dark)
+  document.getElementById('rLow').value=prefs.low; document.getElementById('rHigh').value=prefs.high; document.getElementById('rWarn').value=prefs.warn
+  document.getElementById('entCount').textContent=entries.length
+  updatePubExportPreview()
+}
+
+// Public export helpers
+function getPubFiltered(){
+  const from=document.getElementById('pubExpFrom').value
+  const to=document.getElementById('pubExpTo').value
+  return entries.filter(e=>{
+    const d=new Date(e.datetime)
+    if(from && d<new Date(from+'T00:00:00')) return false
+    if(to   && d>new Date(to+'T23:59:59'))  return false
+    return true
+  })
+}
+function updatePubExportPreview(){
+  const filtered=getPubFiltered()
+  const from=document.getElementById('pubExpFrom').value
+  const to=document.getElementById('pubExpTo').value
+  const rangeStr=from||to?`${from||'start'} → ${to||'today'}`:'All time'
+  document.getElementById('pubExportPreview').textContent=`${filtered.length} entries in range (${rangeStr})`
+}
+window.setPubRange=function(key){
+  const r=getRange(key)
+  document.getElementById('pubExpFrom').value=r.from
+  document.getElementById('pubExpTo').value=r.to
+  updatePubExportPreview()
+}
+window.doPubExport=function(){
+  const filtered=getPubFiltered()
+  if(!filtered.length){toast('No entries in this range','warn');return}
+  const from=document.getElementById('pubExpFrom').value
+  const to=document.getElementById('pubExpTo').value
+  const hdr='Date,Time,Level (mg/dL),Status,Test Type,Meal Tag,Notes'
+  const rows=filtered.map(e=>{
+    const st=status(e.level),d=new Date(e.datetime)
+    return[d.toLocaleDateString(),d.toLocaleTimeString(),e.level,st.lbl,`"${e.type}"`,`"${e.meal}"`,`"${(e.notes||'').replace(/"/g,'""')}"`].join(',')
+  })
+  const csv=[hdr,...rows].join('\n')
+  const a=document.createElement('a')
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}))
+  a.download=`sugar_log_${from||'all'}_to_${to||'today'}.csv`
+  a.click(); toast(`${filtered.length} entries exported`)
+}
+document.getElementById('pubExpFrom').addEventListener('change',updatePubExportPreview)
+document.getElementById('pubExpTo').addEventListener('change',updatePubExportPreview)
+
+window.saveRanges=async()=>{
+  prefs.low=parseInt(document.getElementById('rLow').value)||70
+  prefs.high=parseInt(document.getElementById('rHigh').value)||140
+  prefs.warn=parseInt(document.getElementById('rWarn').value)||200
+  savePrefs(); toast('Ranges saved!')
+}
+
+// ── Admin Auth ────────────────────────────────────────────────
+window.tryAdminLogin=function(){
+  const pw=document.getElementById('pwInput').value
+  if(pw===ADMIN_PWD){
+    isAdmin=true; saveAdminSession()
+    document.getElementById('pwError').textContent=''
+    document.getElementById('pwInput').value=''
+    document.getElementById('adminDot').classList.add('show')
+    renderAdmin()
+    toast('Admin access granted')
+  } else {
+    document.getElementById('pwError').textContent='Incorrect password. Try again.'
+    document.getElementById('pwInput').value=''
+    document.getElementById('pwInput').focus()
+  }
+}
+document.getElementById('pwInput').addEventListener('keydown',e=>{if(e.key==='Enter')tryAdminLogin()})
+
+window.adminLogout=function(){
+  isAdmin=false; clearAdminSession()
+  document.getElementById('adminDot').classList.remove('show')
+  renderAdmin(); renderLog()
+  toast('Logged out of admin')
+}
+
+// ── Admin Panel ───────────────────────────────────────────────
+function renderAdmin(){
+  document.getElementById('adminLoginWall').style.display=isAdmin?'none':'block'
+  document.getElementById('adminContent').style.display=isAdmin?'block':'none'
+  if(isAdmin){ updateExportPreview(); updateDelPreview(); renderDelHistory() }
+}
+
+// Quick ranges for export
+window.setQuickRange=function(key){
+  const r=getRange(key)
+  document.getElementById('expFrom').value=r.from
+  document.getElementById('expTo').value=r.to
+  updateExportPreview()
+}
+window.setDelRange=function(key){
+  const r=getRange(key)
+  document.getElementById('delFrom').value=r.from
+  document.getElementById('delTo').value=r.to
+  updateDelPreview()
+}
+
+function getFilteredEntries(fromId,toId){
+  const from=document.getElementById(fromId).value
+  const to=document.getElementById(toId).value
+  return entries.filter(e=>{
+    const d=new Date(e.datetime)
+    if(from && d<new Date(from+'T00:00:00')) return false
+    if(to   && d>new Date(to+'T23:59:59'))  return false
+    return true
+  })
+}
+
+function updateExportPreview(){
+  const filtered=getFilteredEntries('expFrom','expTo')
+  const from=document.getElementById('expFrom').value
+  const to=document.getElementById('expTo').value
+  const rangeStr=from||to ? `${from||'start'} → ${to||'today'}` : 'All time'
+  document.getElementById('exportPreview').textContent=`${filtered.length} entries in range (${rangeStr})`
+}
+function updateDelPreview(){
+  const filtered=getFilteredEntries('delFrom','delTo')
+  const from=document.getElementById('delFrom').value
+  const to=document.getElementById('delTo').value
+  const rangeStr=from||to ? `${from||'start'} → ${to||'today'}` : 'All time'
+  document.getElementById('delPreview').textContent=`${filtered.length} entries will be deleted (${rangeStr})`
+}
+
+document.getElementById('expFrom').addEventListener('change',updateExportPreview)
+document.getElementById('expTo').addEventListener('change',updateExportPreview)
+document.getElementById('delFrom').addEventListener('change',updateDelPreview)
+document.getElementById('delTo').addEventListener('change',updateDelPreview)
+
+// ── Export ────────────────────────────────────────────────────
+window.doExport=function(){
+  const filtered=getFilteredEntries('expFrom','expTo')
+  if(!filtered.length){toast('No entries in this range','warn');return}
+  const from=document.getElementById('expFrom').value, to=document.getElementById('expTo').value
+  const hdr='Date,Time,Level (mg/dL),Status,Test Type,Meal Tag,Notes'
+  const rows=filtered.map(e=>{
+    const st=status(e.level),d=new Date(e.datetime)
+    return[d.toLocaleDateString(),d.toLocaleTimeString(),e.level,st.lbl,`"${e.type}"`,`"${e.meal}"`,`"${(e.notes||'').replace(/"/g,'""')}"`].join(',')
+  })
+  const csv=[hdr,...rows].join('\n')
+  const a=document.createElement('a')
+  const fname=`sugar_log_${from||'all'}_to_${to||'today'}.csv`
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}))
+  a.download=fname; a.click()
+  toast(`${filtered.length} entries exported`)
+}
+
+// ── Bulk Delete (admin) ───────────────────────────────────────
+window.confirmDelete=function(){
+  const filtered=getFilteredEntries('delFrom','delTo')
+  if(!filtered.length){toast('No entries in this range','warn');return}
+  const reason=getPill('reasonPills')
+  if(!reason){toast('Select a deletion reason','err');return}
+  const notes=document.getElementById('delNotes').value.trim()
+  const from=document.getElementById('delFrom').value,to=document.getElementById('delTo').value
+  const rangeStr=from||to?`${from||'start'} → ${to||'today'}`:'All time'
+  pendingDel={ ids:filtered.map(e=>e.id), reason, notes, range:rangeStr, count:filtered.length }
+  const body=`<strong>${filtered.length}</strong> entr${filtered.length>1?'ies':'y'} will be permanently deleted.<br><br>
+    <strong>Range:</strong> ${rangeStr}<br>
+    <strong>Reason:</strong> ${reason}${notes?'<br><strong>Notes:</strong> '+notes:''}`
+  document.getElementById('delConfirmBody').innerHTML=body
+  document.getElementById('delConfirmModal').classList.add('open')
+}
+
+window.closeDelModal=()=>{document.getElementById('delConfirmModal').classList.remove('open');pendingDel=null}
+document.getElementById('delConfirmModal').addEventListener('click',e=>{if(e.target===document.getElementById('delConfirmModal'))closeDelModal()})
+
+document.getElementById('confirmDelBtn').addEventListener('click',async()=>{
+  if(!pendingDel) return
+  const btn=document.getElementById('confirmDelBtn'); btn.disabled=true; btn.textContent='⏳ Deleting...'
+  await logDeletion(pendingDel.reason, pendingDel.notes, pendingDel.ids, pendingDel.range)
+  const ok=await deleteEntriesDB(pendingDel.ids)
+  if(ok){
+    const n=pendingDel.ids.length
+    entries=entries.filter(e=>!pendingDel.ids.includes(e.id))
+    closeDelModal()
+    document.querySelectorAll('#reasonPills .pill').forEach(p=>p.classList.remove('on'))
+    document.getElementById('delNotes').value=''
+    document.getElementById('delFrom').value=''
+    document.getElementById('delTo').value=''
+    renderDash(); renderLog(); updateDelPreview(); updateExportPreview()
+    document.getElementById('entCount').textContent=entries.length
+    toast(`${n} entr${n>1?'ies':'y'} deleted`)
+    await fetchDelHistory(); renderDelHistory()
+  }
+  btn.disabled=false; btn.textContent='Yes, Delete Permanently'
+})
+
+// ── Deletion History ──────────────────────────────────────────
+function renderDelHistory(){
+  const c=document.getElementById('delHistory')
+  if(!delHistory.length){c.innerHTML='<div class="empty" style="padding:16px 0"><div class="ei" style="font-size:32px">📜</div><p style="font-size:12px">No deletions recorded yet.</p></div>';return}
+  c.innerHTML=delHistory.map((h,i)=>{
+    const entries_arr=h.entries_json||[]
+    return`<div class="del-hist-item">
+      <div class="dhi-header">
+        <div>
+          <div class="dhi-reason">🗑️ ${h.reason}</div>
+          <div class="dhi-date">${fmtDT(h.deleted_at)} · by ${h.deleted_by||'admin'}</div>
+          ${h.date_range?`<div class="dhi-range">📅 Range: ${h.date_range}</div>`:''}
+        </div>
+        <div class="dhi-count">${h.entries_count} deleted</div>
+      </div>
+      <div class="dhi-toggle" onclick="toggleHistEntries(${i})">▶ Show deleted entries</div>
+      <div class="dhi-entries" id="dhe-${i}">
+        ${entries_arr.map(e=>`<div class="dhi-entry-row"><span>${fmtDate(e.datetime)} · ${e.type}</span><span style="font-family:'DM Mono',monospace;font-weight:600">${e.level} mg/dL</span></div>`).join('')}
+      </div>
+    </div>`
+  }).join('')
+}
+window.toggleHistEntries=function(i){
+  const el=document.getElementById('dhe-'+i)
+  const tog=el.previousElementSibling
+  el.classList.toggle('open')
+  tog.textContent=el.classList.contains('open')?'▼ Hide deleted entries':'▶ Show deleted entries'
+}
+
+// ── Init ──────────────────────────────────────────────────────
+async function init(){
+  loadPrefs(); loadAdminSession(); applyTheme()
+  if(isAdmin) document.getElementById('adminDot').classList.add('show')
+  if(initSupa()){
+    document.getElementById('dbStatus').innerHTML='<span class="spin"></span> Connecting...'
+    await Promise.all([fetchEntries(),fetchDelHistory()])
+  }
+  renderDash(); renderLog(); renderCfg()
+}
+init()
+</script>
+</body>
+</html>
